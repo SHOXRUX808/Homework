@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка домашнего задания</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4ed; /* светлый природный оттенок */
+            color: #2e4053; /* темно-зеленый оттенок для текста */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            color: #1e5631; /* глубокий зеленый цвет */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #1e5631;
+            box-shadow: 0 0 5px rgba(30, 86, 49, 0.5);
+        }
+
+        button {
+            background-color: #a3b18a; /* природный зеленый оттенок */
+            color: #ffffff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #6b8f71; /* более темный зеленый оттенок */
+        }
+
+        .footer {
+            margin-top: 10px;
+            font-size: 0.8em;
+            text-align: center;
+            color: #6b705c; /* природный серо-зеленый цвет */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Отправка задания</h1>
+        <form id="homeworkForm">
+            <label for="partnerId">ID партнёра:</label>
+            <input type="text" id="partnerId" name="partnerId" placeholder="Введите ID партнёра" required>
+
+            <label for="phone">Номер телефона:</label>
+            <input type="tel" id="phone" name="phone" placeholder="Введите номер телефона" required>
+
+            <label for="name">Ваше имя:</label>
+            <input type="text" id="name" name="name" placeholder="Введите ваше имя" required>
+
+            <label for="task">Домашнее задание:</label>
+            <textarea id="task" name="task" rows="5" placeholder="Введите текст задания" required></textarea>
+
+            <label for="file">Прикрепить файл:</label>
+            <input type="file" id="file" name="file" required>
+
+            <button type="submit">Отправить</button>
+        </form>
+        <div class="footer">Ваши данные будут отправлены через Telegram</div>
+    </div>
+
+    <script>
+        const botToken = "7379214669:AAGRaSbGaceIbmqH9PwjRfq9L5rdlOmkZ2Q";
+        const chatId = "7309059671";
+
+        document.getElementById("homeworkForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const partnerId = document.getElementById("partnerId").value;
+            const phone = document.getElementById("phone").value;
+            const name = document.getElementById("name").value;
+            const task = document.getElementById("task").value;
+            const fileInput = document.getElementById("file");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Пожалуйста, прикрепите файл.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("chat_id", chatId);
+            formData.append(
+                "caption",
+                `ID партнёра: ${partnerId}\nНомер телефона: ${phone}\nИмя: ${name}\nДомашнее задание:\n${task}`
+            );
+            formData.append("document", file);
+
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                alert("Домашнее задание отправлено!");
+            } catch (error) {
+                alert("Произошла ошибка при отправке задания.");
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
